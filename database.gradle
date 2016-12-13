@@ -1,0 +1,9 @@
+task dropDB(type: Exec) {
+    workingDir 'scripts'
+    commandLine './drop-db.sh'
+}
+
+task createDB(type: Exec) {
+    workingDir 'scripts'
+    commandLine './create-db.sh'
+}

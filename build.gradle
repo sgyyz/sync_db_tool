@@ -1,0 +1,87 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.3.3.RELEASE")
+        classpath("io.spring.gradle:dependency-management-plugin:0.6.1.RELEASE")
+    }
+}
+
+plugins {
+    id "org.flywaydb.flyway" version "4.0.3"
+}
+
+flyway {
+    url="$flywayUrl"
+    user="$flywayUser"
+    password="$flywayPassword"
+    driver="$flywayDriver"
+    baselineOnMigrate="$baselineOnMigrate"
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'application'
+apply plugin: 'spring-boot'
+apply from: 'database.gradle'
+
+mainClassName = "com.Application"
+
+repositories {
+    mavenCentral()
+}
+
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.springframework.boot:spring-boot-starter-hateoas")
+    compile("org.apache.logging.log4j:log4j:2.5")
+    compile("io.springfox:springfox-swagger2:2.4.0")
+    compile("io.springfox:springfox-swagger-ui:2.4.0")
+    compile("ma.glasnost.orika:orika-core:1.4.6")
+    compile("mysql:mysql-connector-java:6.0.2")
+    compile("com.alibaba:fastjson:1.2.12")
+    testCompile("com.jayway.jsonpath:json-path")
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+}
+
+jar {
+    baseName = "sync_db_tool"
+    version = "0.1.0"
+}
+
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"
+idea.project.vcs = "Git"
+
+sourceSets {
+    main {
+        java.srcDirs = ['src/main/java']
+        resources.srcDirs = ['src/main/resources']
+    }
+    test {
+        java.srcDirs = ['src/test/unit/java', 'src/test/intg/java']
+        resources.srcDirs = ['src/test/unit/resources', 'src/test/intg/resources']
+    }
+}
+
+defaultTasks 'clean', 'build'
+
+clean.dependsOn createDB
+clean.dependsOn flywayRepair
+build.dependsOn flywayMigrate
+
+test {
+    exclude '**/*IntegrationTest.class'
+}
+task unitTest(dependsOn: test)
+
+task integrationTest(type: Test) {
+    include '**/*IntegrationTest.class'
+}
+build.dependsOn integrationTest
+
+task wrapper(type: Wrapper) {
+    gradleVersion = "$gradleVersion"
+}
