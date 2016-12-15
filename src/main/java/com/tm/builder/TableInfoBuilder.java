@@ -63,6 +63,9 @@ public class TableInfoBuilder {
                     value = 1;
                 }
                 LOGGER.info(value + ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            } else if (rs.getObject(name) instanceof java.sql.Timestamp) {
+                value = rs.getString(name);
+
             } else {
                 value = rs.getObject(name);
             }
@@ -91,7 +94,13 @@ public class TableInfoBuilder {
     public List<PrimaryKey> getPrimaryKeys(ResultSet rs, List<String> primaryKeyColumnNames) throws SQLException {
         List<PrimaryKey> primaryKeys = new ArrayList<>();
         for (String primaryKeyColumnName : primaryKeyColumnNames) {
-            PrimaryKey pk = new PrimaryKey(primaryKeyColumnName, rs.getObject(primaryKeyColumnName));
+            PrimaryKey pk = null;
+            if (rs.getObject(primaryKeyColumnName) instanceof java.sql.Timestamp) {
+                pk = new PrimaryKey(primaryKeyColumnName, rs.getString(primaryKeyColumnName));
+            } else {
+                pk = new PrimaryKey(primaryKeyColumnName, rs.getObject(primaryKeyColumnName));
+
+            }
             primaryKeys.add(pk);
         }
         return primaryKeys;

@@ -114,9 +114,17 @@ public class DBUtil {
     public static String getSelectSQL(String tableName, List<PrimaryKey> primaryKeys) {
         String sql = "select * from " + tableName + " where ";
         for (PrimaryKey primaryKey : primaryKeys) {
-            Object primaryKeyValue = primaryKey.getValue();
-            if (primaryKeyValue != null && !primaryKeyValue.equals("")) {
-                sql = sql + "`" + primaryKey.getName() + "`" + "=" + primaryKeyValue + " and ";
+            Object value = primaryKey.getValue();
+            if (value != null && !value.equals("")) {
+                if (value instanceof String || value instanceof java.sql.Date ||
+                        value instanceof java.sql.Time || value instanceof java.sql.Timestamp) {
+                    sql = sql + "`" + primaryKey.getName() + "`" + "=" +  "'" + value +"'"+ " and ";
+
+                }else{
+                    sql = sql + "`" + primaryKey.getName() + "`" + "=" + value + " and ";
+                }
+
+
             }
 
         }
@@ -162,17 +170,29 @@ public class DBUtil {
         String sql = "update " + tableName + " set";
         for (int i = 0; i < columns.size(); i++) {
             Column column = columns.get(i);
-            if (column.getValue() instanceof String || column.getValue() instanceof java.util.Date) {
-                sql += " " + "`" + column.getName() + "`" + "=" + "'" +column.getValue() +"'" +",";
+            Object value = column.getValue();
+            if (value instanceof String || value instanceof java.sql.Date ||
+                    value instanceof java.sql.Time || value instanceof java.sql.Timestamp) {
+                sql += " " + "`" + column.getName() + "`" + "=" + "'" + value +"'" +",";
 
             }else{
-                sql += " " + "`" + column.getName() + "`"  + "=" +column.getValue() +",";
+                sql += " " + "`" + column.getName() + "`"  + "=" + value +",";
             }
 
         }
-        sql = sql.substring(0,sql.length() - 1) + " where";
+        sql = sql.substring(0,sql.length() - 1) + " where ";
         for (PrimaryKey primaryKey : primaryKeys) {
-            sql += " " + "`" + primaryKey.getName() + "`" + "=" + primaryKey.getValue() + " and ";
+            Object value = primaryKey.getValue();
+            String name = primaryKey.getName();
+            if (value instanceof String || value instanceof java.sql.Date ||
+                    value instanceof java.sql.Time || value instanceof java.sql.Timestamp) {
+                sql += "`" + name + "`" + "=" +"'" + value +"'"+ " and ";
+
+            }else{
+                sql += "`" + name + "`" + "=" + value + " and ";
+            }
+
+
         }
 
         return sql.substring(0, sql.length() - 5);
