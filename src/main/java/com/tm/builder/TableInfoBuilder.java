@@ -1,8 +1,10 @@
 package com.tm.builder;
 
+import com.tm.controller.TableController;
 import com.tm.domain.Column;
 import com.tm.domain.FkInfo;
 import com.tm.domain.PrimaryKey;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import java.sql.*;
@@ -18,6 +20,7 @@ import static com.tm.util.DBUtil.getSourceConnection;
 
 @Component
 public class TableInfoBuilder {
+    private final static Logger LOGGER = Logger.getLogger(TableController.class);
 
     public List<String> getPrimaryKeyColumnNames(String tableName) throws SQLException {
         Connection connection = getSourceConnection();
@@ -38,7 +41,7 @@ public class TableInfoBuilder {
         ResultSet resultSet = statement.executeQuery(sql);
         ResultSetMetaData metaData = resultSet.getMetaData();
         List<String> result = new LinkedList<>();
-        for (int i = 1; i <= metaData.getColumnCount() ; i++) {
+        for (int i = 1; i <= metaData.getColumnCount(); i++) {
             result.add(metaData.getColumnName(i));
         }
         return result;
@@ -47,11 +50,24 @@ public class TableInfoBuilder {
     public List<Column> getColumns(ResultSet rs) throws SQLException {
         ResultSetMetaData metaData = rs.getMetaData();
         List<Column> result = new LinkedList<>();
-            for (int i = 1; i <= metaData.getColumnCount() ; i++) {
+        for (int i = 1; i <= metaData.getColumnCount(); i++) {
 
-                String name = metaData.getColumnName(i);
-                Object value = rs.getObject(name);
-                result.add(new Column(name,value));
+            String name = metaData.getColumnName(i);
+            Object value = null;
+            if (metaData.getColumnTypeName(i).equals("BIT") &&
+                    metaData.getColumnClassName(i).equals("java.lang.Boolean")) {
+                value = (int) rs.getBytes(name)[0];
+                if ((int) value == 48 || (int) value == 0) {
+                    value = 0;
+                } else {
+                    value = 1;
+                }
+                LOGGER.info(value + ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+            } else {
+                value = rs.getObject(name);
+            }
+
+            result.add(new Column(name, value));
         }
         return result;
     }

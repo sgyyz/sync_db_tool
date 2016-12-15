@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.util.List;
 
 import static com.tm.util.DBUtil.*;
@@ -27,7 +28,8 @@ public class InsertDataServiceImp implements InsertDataService {
     public boolean insertData(ResultSet rs, String tableName, String identifier) throws Exception {
         boolean flag;
         Connection connection = getTargetConnection();
-        int columnCount = rs.getMetaData().getColumnCount();
+        ResultSetMetaData metaData = rs.getMetaData();
+        int columnCount = metaData.getColumnCount();
         PreparedStatement prepareStatement = connection.prepareStatement(getInsertSQL(tableName));
         while (rs.next()) {
             for (int i = 1; i <= columnCount; i++) {
@@ -37,7 +39,20 @@ public class InsertDataServiceImp implements InsertDataService {
                     DBUtil.update(primaryKeys, tableName, tableInfoBuilder.getColumns(rs));
                     break;
                 }
-                prepareStatement.setObject(i, rs.getObject(i));
+                if (metaData.getColumnTypeName(i).equals("BIT") &&
+                        metaData.getColumnClassName(i).equals("java.lang.Boolean")){
+
+                   int value = (int) rs.getBytes(i)[0];
+                    if (value == 48 || value == 0) {
+                        value = 0;
+                    } else {
+                        value = 1;
+                    }
+                    prepareStatement.setObject(i, value);
+                } else{
+                    prepareStatement.setObject(i, rs.getObject(i));
+                }
+
                 if (i == columnCount) {
                     prepareStatement.addBatch();
                 }

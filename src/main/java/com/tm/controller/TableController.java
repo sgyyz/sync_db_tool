@@ -80,13 +80,13 @@ public class TableController {
         if (identifier != null) {
             Condition condition = identifier.getCondition();
             String tableName = condition.getTableName();
-            String identifierContent = "";
+            StringBuilder identifierContent = new StringBuilder("");
             for (Column column : condition.getColumns()) {
 
-                identifierContent += ("`" + column.getName() + "`" + "=" + column.getValue().toString() + " and ");
+                identifierContent.append("`" + column.getName() + "`" + "=" + column.getValue().toString() + " and ");
             }
             tableRelationshipBuilder.initIdentifierMapper(tableName,
-                    identifierContent.substring(0, identifierContent.length() - 5));
+                    identifierContent.toString().substring(0, identifierContent.length() - 5));
         }
     }
 }
