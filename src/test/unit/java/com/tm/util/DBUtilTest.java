@@ -1,11 +1,15 @@
 package com.tm.util;
 
 
+import com.tm.builder.TableInfoBuilder;
 import com.tm.builder.TableRelationshipBuilder;
+import com.tm.domain.PrimaryKey;
 import org.junit.Test;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -54,11 +58,22 @@ public class DBUtilTest {
     @Test
     public void test_update() throws SQLException {
 //        TableInfoBuilder tableInfoBuilder = new TableInfoBuilder();
-//        ResultSet resultSet = DBUtil.getResultSet("ssp", "id=99");
+//        ResultSet resultSet = DBUtil.getResultSet("archive_inventory", "1=1");
 //        resultSet.next();
 //        assertThat(DBUtil.getUpdateSQL(tableInfoBuilder.getPrimaryKeys(resultSet,
-//                tableInfoBuilder.getPrimaryKeyColumnNames("ssp")),"ssp", tableInfoBuilder.getColumns(resultSet)),
+//                tableInfoBuilder.getPrimaryKeyColumnNames("archive_inventory")),"archive_inventory", tableInfoBuilder.getColumns(resultSet)),
 //                is("select * from ssp where id=99 limit 0,3"));
+    }
+
+    @Test
+    public void test_selectSQL() throws SQLException {
+//        TableInfoBuilder tableInfoBuilder = new TableInfoBuilder();
+//        ResultSet resultSet = DBUtil.getResultSet("archive_inventory", "day=33 and update_date='2016-12-11 11:11:12'");
+//        resultSet.next();
+////        assertThat(resultSet.getString("update_date"), is(""));
+//        List<PrimaryKey> primaryKeys = tableInfoBuilder.getPrimaryKeys(resultSet,
+//                tableInfoBuilder.getPrimaryKeyColumnNames("archive_inventory"));
+//        assertThat(DBUtil.getSelectSQL("archive_inventory", primaryKeys), is("....."));
     }
 
 }
