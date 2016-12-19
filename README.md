@@ -17,9 +17,11 @@ We’ve already shared this project on github, so you can clone it there.
 `git clone https://github.com/lijun003/sync_db_tool.git`
 
 * Configuration modification, you should modify, 
+
 **application.properties:**
 ```
- # remote datasource properties                spring.datasource.url=jdbc:mysql://localhost:3306/ptv_working?useUnicode=true&characterEncoding=utf-8&useSSL=false
+# remote datasource properties                
+spring.datasource.url=jdbc:mysql://localhost:3306/ptv_working?useUnicode=true&characterEncoding=utf-8&useSSL=false
 spring.datasource.username=root
 spring.datasource.password=123456
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
@@ -51,6 +53,26 @@ Or
 
 * Then it is time to sync data we need. Because we don not have UI. We use swagger ui instead.
 `http://localhost:8081/data-sync/swagger-ui.html`
+
+# POST data sample
+```javascript
+{
+	"identifierCondition": {
+		"columns": [
+			"name": "id",
+			"value": "90"
+		],
+		...
+	},
+	"identifierTableName": "your_table_name",
+	"syncTables": [
+		"table1", 
+		"table2",
+		...
+	]
+
+}
+```
 
 
 
