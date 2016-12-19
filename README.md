@@ -1,35 +1,56 @@
-# sync_db_tool
+sync_db_tool
+=========================
+# Background
+Since we need to sync data between different environment databases, so this tool will help us to do this work by case. It will support migrate whole tables data or by identifier.
 
-### Reload IntelliJ IDEA project
-`./gradlew cleanIdea idea`
+# Environment
+- gradle 2.14+ (if you are using a jar version, this tool is not necessary)
+- jdk 1.8.0+
 
-### Run clean and build tasks
-`./gradlew clean build`, will auto create database
+# Preconditions
+- Tables are between different environments should have same schema(Local, QA or DEV). If local table schema is out of date, please run the liquidbase script to update them.
+- You should have your own credentials for all environment. (Recommend: using read-only credentials on QA or Dev)
 
-### Run unit test
-`./gradlew test`, it depends on `build` task.
+# Start project
+We’ve already shared this project on github, so you can clone it there.
+* Clone project , you can use the follow command line：
+`git clone https://github.com/lijun003/sync_db_tool.git`
 
-### Run integration test
-`./gradlew integrationTest` or `./gradlew iT`, it depends on `build` task.
+* Configuration modification, you should modify, 
+**application.properties:**
+```
+ # remote datasource properties                spring.datasource.url=jdbc:mysql://localhost:3306/ptv_working?useUnicode=true&characterEncoding=utf-8&useSSL=false
+spring.datasource.username=root
+spring.datasource.password=123456
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
-### Run build exclude integration test
-`./gradlew build -x integrationTest` or `./gradlew build -x iT`
-
-### Start Application
-`./gradlew bootRun`
-
-### Run the JAR file
+# local datasource properties
+spring.datasource.secondary.url=jdbc:mysql://localhost:3306/ptv_working_local?useUnicode=true&characterEncoding=utf-8&useSSL=false
+spring.datasource.secondary.username=root
+spring.datasource.secondary.password=123456
+spring.datasource.secondary.driver-class-name=com.mysql.cj.jdbc.Driver
+```
+**gradle.properties:**
+```
+flywayUrl = jdbc:mysql://localhost:3306/ptv_working_local?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8&useSSL=false
+flywayUser = root
+flywayPassword = 123456
+flywayDriver = com.mysql.cj.jdbc.Driver
+baselineOnMigrate= true
+```
+* Build cloned application, you can use the follow command lines:
+```
+cd sync_data_tool
+./gradlew cleanIdea idea
+./gradlew clean build
+```
+* 2 ways to start this project
+`.gradlew bootRun`
+Or
 `java -jar build/libs/sync_db_tool-0.1.0.jar`
 
-### Swagger UI link
+* Then it is time to sync data we need. Because we don not have UI. We use swagger ui instead.
 `http://localhost:8081/data-sync/swagger-ui.html`
 
 
-### Git提交规范：
-
-[卡号][提交作者&Pair作者] - comment here
-
-Note: [提交作者]和comment之间需要有 空格+minus+空格，comment内容不要出现minus。
-
-**Example:** `[M001][justin&jason] - add the order domain object`
 
